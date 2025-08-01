@@ -1,10 +1,10 @@
 # Alfa ICP HashedTimelock Contract
 
-An Internet Computer Protocol (ICP) implementation of the Ethereum HashedTimelock contract, enabling secure atomic swaps with time-based conditions.
+An Internet Computer Protocol (ICP) implementation for atomic swaps between Ethereum and ICP, enabling secure cross-chain token exchanges with time-based conditions.
 
 ## Description
 
-This project implements a HashedTimelock contract for the Internet Computer blockchain, providing functionality for creating time-locked swaps with cryptographic hash verification. The contract supports ICRC-1 token transfers and includes comprehensive validation and monitoring capabilities.
+This project implements the ICP side of the Alfa ICP Resolver, providing functionality for creating time-locked swaps with cryptographic hash verification. The canister supports ICRC-1 token transfers and includes comprehensive validation and monitoring capabilities for cross-chain atomic swaps.
 
 ## Project Structure
 
@@ -37,10 +37,9 @@ alfa-icp-resolver/
 
 ### Setup
 
-1. Clone the repository:
+1. Navigate to the ICP canisters directory:
 ```bash
-git clone <repository-url>
-cd alfa-icp-resolver
+cd icp-canisters
 ```
 
 2. Install Rust dependencies:
@@ -82,48 +81,48 @@ npm test
 
 ### Core Functions
 
-#### `create_swap(request: CreateSwapRequest) -> SwapResponse`
-Creates a new time-locked swap with cryptographic verification.
+#### `new_contract(request: NewContractRequest) -> ContractResponse`
+Creates a new time-locked contract with cryptographic verification.
 
 **Parameters:**
-- `recipient`: Principal ID of the swap recipient
+- `receiver`: Principal ID of the contract receiver
 - `amount`: Token amount in smallest units
 - `hashlock`: SHA-256 hash of the preimage
-- `timelock`: Unix timestamp when the swap expires
+- `timelock`: Unix timestamp when the contract expires
 - `ledger_id`: Principal ID of the token ledger
 
-#### `withdraw(request: WithdrawRequest) -> SwapResponse`
-Withdraws funds from a swap using the correct preimage.
+#### `claim(request: ClaimRequest) -> ContractResponse`
+Claims funds from a contract using the correct preimage.
 
 **Parameters:**
-- `swap_id`: Unique identifier of the swap
+- `lock_id`: Unique identifier of the contract
 - `preimage`: Original data that produces the hashlock
 
-#### `refund(request: RefundRequest) -> SwapResponse`
-Refunds the swap to the original sender after timelock expiration.
+#### `refund(request: RefundRequest) -> ContractResponse`
+Refunds the contract to the original sender after timelock expiration.
 
 **Parameters:**
-- `swap_id`: Unique identifier of the swap
+- `lock_id`: Unique identifier of the contract
 
 ### Query Functions
 
-#### `get_swap(swap_id: String) -> Option<Swap>`
-Retrieves a specific swap by ID.
+#### `get_contract(lock_id: String) -> Option<TimeLockContract>`
+Retrieves a specific contract by ID.
 
-#### `get_all_swaps() -> Vec<(String, Swap)>`
-Returns all swaps in the contract.
+#### `get_all_contracts() -> Vec<(String, TimeLockContract)>`
+Returns all contracts in the canister.
 
-#### `get_swaps_by_sender(sender: String) -> Vec<(String, Swap)>`
-Returns swaps created by a specific sender.
+#### `get_contracts_by_sender(sender: String) -> Vec<(String, TimeLockContract)>`
+Returns contracts created by a specific sender.
 
-#### `get_swaps_by_recipient(recipient: String) -> Vec<(String, Swap)>`
-Returns swaps where a specific address is the recipient.
+#### `get_contracts_by_receiver(receiver: String) -> Vec<(String, TimeLockContract)>`
+Returns contracts where a specific address is the receiver.
 
-#### `get_active_swaps() -> Vec<(String, Swap)>`
-Returns all non-expired, non-withdrawn, non-refunded swaps.
+#### `get_active_contracts() -> Vec<(String, TimeLockContract)>`
+Returns all non-expired, non-claimed, non-refunded contracts.
 
-#### `get_expired_swaps() -> Vec<(String, Swap)>`
-Returns all expired swaps that haven't been withdrawn or refunded.
+#### `get_expired_contracts() -> Vec<(String, TimeLockContract)>`
+Returns all expired contracts that haven't been claimed or refunded.
 
 ### Utility Functions
 
@@ -141,28 +140,28 @@ Returns the contract version.
 
 ## Data Structures
 
-### Swap
+### TimeLockContract
 ```rust
-pub struct Swap {
-    pub sender: String,           // Principal ID of swap creator
-    pub recipient: String,        // Principal ID of swap recipient
+pub struct TimeLockContract {
+    pub sender: String,           // Principal ID of contract creator
+    pub receiver: String,         // Principal ID of contract receiver
     pub amount: u64,             // Token amount in smallest units
     pub hashlock: String,        // SHA-256 hash of preimage
-    pub timelock: u64,          // Unix timestamp when swap expires
-    pub withdrawn: bool,         // Whether funds have been withdrawn
+    pub timelock: u64,          // Unix timestamp when contract expires
+    pub withdrawn: bool,         // Whether funds have been claimed
     pub refunded: bool,          // Whether funds have been refunded
-    pub preimage: Option<String>, // Original preimage (set after withdrawal)
+    pub preimage: Option<String>, // Original preimage (set after claim)
     pub ledger_id: String,       // Principal ID of token ledger
 }
 ```
 
-### SwapResponse
+### ContractResponse
 ```rust
-pub struct SwapResponse {
+pub struct ContractResponse {
     pub success: bool,                    // Operation success status
     pub message: String,                  // Human-readable message
-    pub swap_id: Option<String>,          // Unique swap identifier
-    pub swap: Option<Swap>,              // Swap data (if applicable)
+    pub lock_id: Option<String>,          // Unique contract identifier
+    pub contract: Option<TimeLockContract>, // Contract data (if applicable)
     pub transfer_result: Option<u64>,    // Block index of transfer (if applicable)
 }
 ```
@@ -194,12 +193,12 @@ pub struct SwapResponse {
 ### Current Limitations
 - Single-threaded execution (canister limitation)
 - Limited storage capacity per canister
-- No support for cross-chain swaps
+- Cross-chain swaps require coordination with Ethereum contracts
 - ICRC-1 token transfers only
 
 ### Future Enhancements
 - Support for multiple token standards
-- Cross-chain swap capabilities
+- Enhanced cross-chain swap coordination
 - Advanced time-lock mechanisms
 - Batch operations for multiple swaps
 

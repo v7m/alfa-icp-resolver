@@ -1,4 +1,4 @@
-# Alfa ICP Resolver
+# 🐺⛓️🪙 Alfa ICP Resolver
 
 Project for performing swaps between Ethereum and Internet Computer Protocol (ICP) using atomic swaps.
 
