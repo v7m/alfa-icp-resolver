@@ -1,0 +1,71 @@
+type TimeLockContract = record {
+    sender: text;
+    receiver: text;
+    amount: nat64;
+    hashlock: text;
+    timelock: nat64;
+    preimage: opt text;
+    withdrawn: bool;
+    refunded: bool;
+    ledger_id: text;
+};
+
+type NewContractRequest = record {
+    receiver: text;
+    amount: nat64;
+    hashlock: text;
+    timelock: nat64;
+    ledger_id: text;
+};
+
+type ClaimRequest = record {
+    lock_id: text;
+    preimage: text;
+};
+
+type RefundRequest = record {
+    lock_id: text;
+};
+
+type ContractResponse = record {
+    success: bool;
+    message: text;
+    lock_id: opt text;
+    contract: opt TimeLockContract;
+    transfer_result: opt nat;
+};
+
+type TransferRequest = record {
+    ledger_id: text;
+    to: text;
+    amount: nat64;
+    fee: opt nat64;
+    memo: opt blob;
+    created_at_time: opt nat64;
+};
+
+type TransferResponse = record {
+    success: bool;
+    message: text;
+    block_index: opt nat;
+    transfer_id: opt text;
+};
+
+service: {
+    new_contract: (NewContractRequest) -> (ContractResponse);
+    claim: (ClaimRequest) -> (ContractResponse);
+    refund: (RefundRequest) -> (ContractResponse);
+    get_contract: (text) -> (opt TimeLockContract) query;
+    get_all_contracts: () -> (vec record { text; TimeLockContract }) query;
+    get_contracts_by_sender: (text) -> (vec record { text; TimeLockContract }) query;
+    get_contracts_by_receiver: (text) -> (vec record { text; TimeLockContract }) query;
+    get_caller: () -> (text) query;
+    get_current_time: () -> (nat64) query;
+    get_version: () -> (text) query;
+    hash_preimage: (text) -> (text) query;
+    verify_preimage_hash: (text, text) -> (bool) query;
+    get_contract_count: () -> (nat64) query;
+    get_active_contracts: () -> (vec record { text; TimeLockContract }) query;
+    get_expired_contracts: () -> (vec record { text; TimeLockContract }) query;
+    transfer_icrc1: (TransferRequest) -> (TransferResponse);
+}; 

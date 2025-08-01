@@ -1,0 +1,40 @@
+(variant {
+    Init = record {
+        send_whitelist = vec {
+            principal "sculj-2sjuf-dxqlm-dcv5y-hin5x-zfyvr-tzngf-bt5b5-dwhcc-zbsqf-rae";
+        };
+        token_symbol = opt "ICP";
+        transfer_fee = opt record { e8s = 10000 : nat64 };
+        minting_account = "sculj-2sjuf-dxqlm-dcv5y-hin5x-zfyvr-tzngf-bt5b5-dwhcc-zbsqf-rae";
+        transaction_window = opt record {
+            secs = 10 : nat64;
+            nanos = 0 : nat32;
+        };
+        max_message_size_bytes = opt(2560000 : nat64);
+        icrc1_minting_account = opt record {
+            owner = principal "sculj-2sjuf-dxqlm-dcv5y-hin5x-zfyvr-tzngf-bt5b5-dwhcc-zbsqf-rae";
+            subaccount = null;
+        };
+        archive_options = opt record {
+            num_blocks_to_archive = 1000000 : nat64;
+            max_transactions_per_response = null;
+            trigger_threshold = 1000000 : nat64;
+            max_message_size_bytes = null;
+            cycles_for_archive_creation = null;
+            node_max_memory_size_bytes = null;
+            controller_id = principal "sculj-2sjuf-dxqlm-dcv5y-hin5x-zfyvr-tzngf-bt5b5-dwhcc-zbsqf-rae";
+        };
+        initial_values = vec {
+            record {
+                "sculj-2sjuf-dxqlm-dcv5y-hin5x-zfyvr-tzngf-bt5b5-dwhcc-zbsqf-rae";
+                record {
+                    e8s = 10000000000 : nat64;
+                };
+            };
+        };
+        token_name = opt "Internet Computer";
+        feature_flags = opt record { icrc2 = false };
+        maximum_number_of_accounts = null;
+        accounts_overflow_trim_quantity = null;
+    }
+})

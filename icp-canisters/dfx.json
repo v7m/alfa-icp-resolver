@@ -1,0 +1,32 @@
+{
+  "canisters": {
+    "alfa_icp_resolver": {
+      "type": "custom",
+      "build": [
+        "cargo build --target wasm32-unknown-unknown --package alfa-icp-resolver --release"
+      ],
+      "candid": "src/alfa_icp_resolver.did",
+      "wasm": "target/wasm32-unknown-unknown/release/alfa_icp_resolver.wasm"
+    },
+    "ledger": {
+      "type": "custom",
+      "candid": "ledger.did",
+      "wasm": "ledger.wasm",
+      "init": "init.args"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": "",
+      "args": ""
+    }
+  },
+  "dfx": "0.28.0",
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+} 
